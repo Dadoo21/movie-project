@@ -1,30 +1,51 @@
-
 import { createContext, useState, useEffect, useContext } from 'react';
 import { getMoviePricing } from '../utils/pricing';
+import { useAuth } from './AuthContext';
 
 export const CartContext = createContext();
 
 export const useCart = () => useContext(CartContext);
 
 export const CartProvider = ({ children }) => {
+  const { user } = useAuth();
+  
+  // Chiavi dinamiche basate sull'utente loggato. Se non c'è, usa 'guest'
+  const cartKey = user ? `cart_${user.email}` : 'cart_guest';
+  const wishlistKey = user ? `wishlist_${user.email}` : 'wishlist_guest';
+  const orderHistoryKey = user ? `orderHistory_${user.email}` : 'orderHistory_guest';
 
-  const [cart, setCart] = useState(() => {
-    const savedCart = localStorage.getItem('cart');
-    return savedCart ? JSON.parse(savedCart) : [];
-  });
+  const [cart, setCart] = useState([]);
+  const [wishlist, setWishlist] = useState([]);
+  const [orderHistory, setOrderHistory] = useState([]);
+  const [isInitialized, setIsInitialized] = useState(false);
 
-  const [wishlist, setWishlist] = useState(() => {
-    const savedWishlist = localStorage.getItem('wishlist');
-    return savedWishlist ? JSON.parse(savedWishlist) : [];
-  });
+  // 1. Caricamento dati: Viene eseguito al mount e ogni volta che cambia utente
+  useEffect(() => {
+    const savedCart = localStorage.getItem(cartKey);
+    setCart(savedCart ? JSON.parse(savedCart) : []);
+
+    const savedWishlist = localStorage.getItem(wishlistKey);
+    setWishlist(savedWishlist ? JSON.parse(savedWishlist) : []);
+
+    const savedOrderHistory = localStorage.getItem(orderHistoryKey);
+    setOrderHistory(savedOrderHistory ? JSON.parse(savedOrderHistory) : []);
+    
+    setIsInitialized(true);
+  }, [user, cartKey, wishlistKey, orderHistoryKey]);
+
+  // 2. Salvataggi automatici (eseguiti solo se inizializzato, per non sovrascrivere al primo render)
+  useEffect(() => {
+    if (isInitialized) localStorage.setItem(cartKey, JSON.stringify(cart));
+  }, [cart, cartKey, isInitialized]);
 
   useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(cart));
-  }, [cart]);
+    if (isInitialized) localStorage.setItem(wishlistKey, JSON.stringify(wishlist));
+  }, [wishlist, wishlistKey, isInitialized]);
 
   useEffect(() => {
-    localStorage.setItem('wishlist', JSON.stringify(wishlist));
-  }, [wishlist]);
+    if (isInitialized) localStorage.setItem(orderHistoryKey, JSON.stringify(orderHistory));
+  }, [orderHistory, orderHistoryKey, isInitialized]);
+
 
   const addToCart = (movie, type = 'acquisto') => {
     setCart((prev) => {
@@ -61,8 +82,20 @@ export const CartProvider = ({ children }) => {
   const clearCartAndCheckout = () => {
     const cartMovieIds = new Set(cart.map(item => item.id));
 
+    // Salva l'ordine nella cronologia
+    const newOrder = {
+      id: Date.now(),
+      date: new Date().toISOString(),
+      items: [...cart],
+      total: cartTotalPrice
+    };
+    
+    setOrderHistory(prev => [newOrder, ...prev]);
+
+    // Elimina i film acquistati dalla wishlist
     setWishlist(prev => prev.filter(item => !cartMovieIds.has(item.id)));
 
+    // Svuota il carrello
     setCart([]);
   };
 
@@ -79,13 +112,17 @@ export const CartProvider = ({ children }) => {
   const isInWishlist = (id) => wishlist.some(item => item.id === id);
 
   const cartTotalItems = cart.reduce((total, item) => total + item.quantity, 0);
-
   const cartTotalPrice = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+
+  const clearOrderHistory = () => {
+    setOrderHistory([]);
+  };
 
   return (
     <CartContext.Provider value={{ 
       cart, addToCart, removeFromCart, updateQuantity, clearCartAndCheckout, cartTotalItems, cartTotalPrice,
-      wishlist, toggleWishlist, isInWishlist 
+      wishlist, toggleWishlist, isInWishlist,
+      orderHistory, clearOrderHistory
     }}>
       {children}
     </CartContext.Provider>
