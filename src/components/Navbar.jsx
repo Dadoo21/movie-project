@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { cartTotalItems } = useCart();
+  const { cartTotalItems, wishlist } = useCart();
   const { user } = useAuth();
   const location = useLocation();
 
@@ -54,8 +54,13 @@ const Navbar = () => {
           </div>
 
           <div className="hidden md:flex items-center gap-3 z-10">
-            <Link to="/wishlist" className="p-2.5 rounded-full bg-dark-lighter hover:bg-white/10 transition-all duration-300 hover:scale-105 border border-white/5 text-gray-300 hover:text-primary shadow-sm" title="Wishlist">
+            <Link to="/wishlist" className="relative p-2.5 rounded-full bg-dark-lighter hover:bg-white/10 transition-all duration-300 hover:scale-105 border border-white/5 text-gray-300 hover:text-primary shadow-sm" title="Wishlist">
               <Heart className="h-5 w-5" />
+              {wishlist.length > 0 && (
+                <span className="absolute -top-1 -right-1 bg-primary text-white text-[10px] rounded-full h-5 w-5 flex items-center justify-center font-bold shadow-glow ring-2 ring-darker">
+                  {wishlist.length}
+                </span>
+              )}
             </Link>
             
             <Link to="/cart" className="relative p-2.5 rounded-full bg-dark-lighter hover:bg-white/10 transition-all duration-300 hover:scale-105 border border-white/5 text-gray-300 hover:text-primary shadow-sm" title="Carrello">
@@ -93,8 +98,13 @@ const Navbar = () => {
             <Link to="/" className={`block px-4 py-3 rounded-xl text-base font-medium transition-all ${location.pathname === '/' ? 'bg-white/10 text-white' : 'text-gray-400 hover:bg-white/5 hover:text-white'}`} onClick={chiudiMenu}>Home</Link>
             <Link to="/offers" className={`block px-4 py-3 rounded-xl text-base font-bold transition-all ${location.pathname === '/offers' ? 'bg-primary/20 text-primary border border-primary/30' : 'text-primary/70 hover:bg-primary/10 hover:text-primary'}`} onClick={chiudiMenu}>Offerte</Link>
             <div className="h-px bg-white/10 my-2" />
-            <Link to="/wishlist" className="flex items-center gap-3 px-4 py-3 rounded-xl text-base font-medium text-gray-300 hover:bg-white/5 hover:text-primary transition-all" onClick={chiudiMenu}>
-              <Heart className="w-5 h-5" /> Lista Desideri
+            <Link to="/wishlist" className="flex justify-between items-center px-4 py-3 rounded-xl text-base font-medium text-gray-300 hover:bg-white/5 hover:text-primary transition-all" onClick={chiudiMenu}>
+              <span className="flex items-center gap-3"><Heart className="w-5 h-5" /> Lista Desideri</span>
+              {wishlist.length > 0 && (
+                <span className="bg-primary text-white text-xs px-2 py-1 rounded-full font-bold shadow-glow">
+                  {wishlist.length}
+                </span>
+              )}
             </Link>
             <Link to="/cart" className="flex justify-between items-center px-4 py-3 rounded-xl text-base font-medium text-gray-300 hover:bg-white/5 hover:text-primary transition-all" onClick={chiudiMenu}>
               <span className="flex items-center gap-3"><ShoppingCart className="w-5 h-5" /> Carrello</span>
