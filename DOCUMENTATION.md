@@ -1,81 +1,49 @@
 # Documentazione Progetto: Movie Web App
 
 ## 1. Scopo del Progetto
-L'obiettivo di questa applicazione è fornire un'interfaccia utente moderna, veloce e completamente responsiva per l'esplorazione, l'acquisto simulato e il noleggio di film. Il progetto mira a dimostrare le best practice dello sviluppo frontend moderno, implementando funzionalità complesse come l'autenticazione lato client, la gestione globale dello stato (carrello e lista desideri), il routing protetto e l'integrazione asincrona con API esterne, il tutto racchiuso in una UI curata e accattivante.
+L'obiettivo di questa applicazione è fornire un'interfaccia utente moderna, veloce e completamente responsiva per l'esplorazione, l'acquisto simulato e il noleggio di film. Il progetto è stato sviluppato per dimostrare le best practice dello sviluppo frontend, con un focus particolare su un'esperienza utente (UX) eccellente, logiche di gamification e architettura dati avanzata.
 
 ## 2. Struttura del Progetto
-Il codice è organizzato secondo una struttura modulare feature-based, tipica delle applicazioni React scalabili:
+Il codice è organizzato in una struttura modulare per facilitare la manutenzione e la scalabilità:
+- **api/**: Gestione delle chiamate ai server esterni (TMDB) per ottenere il catalogo film.
+- **components/**: Elementi grafici riutilizzabili come la Barra di navigazione, le locandine dei film, i filtri di ricerca e i bottoni.
+- **context/**: Il "cervello" dell'app, dove risiedono i dati condivisi globalmente (sessione utente, carrello, lista desideri).
+- **pages/**: Le vere e proprie "schermate" del sito (Home, Offerte, Profilo, Carrello, ecc.).
+- **utils/**: Funzioni matematiche o logiche pure separate dall'interfaccia (es. l'algoritmo di calcolo dei prezzi).
 
-```text
-src/
-├── api/             # Interfacciamento con API esterne (TMDB)
-├── assets/          # File statici (immagini, icone vettoriali)
-├── components/      # Componenti UI riutilizzabili (Navbar, MovieCard, Modali)
-├── context/         # Gestione dello stato globale (AuthContext, CartContext)
-├── pages/           # Viste principali mappate sulle rotte (Home, Offers, Cart, ecc.)
-├── utils/           # Funzioni di utilità pure (es. logiche di calcolo prezzi)
-├── App.jsx          # Entry point del routing e aggregatore dei provider
-└── index.css        # Entry point globale per Tailwind e custom CSS
-```
+## 3. Come Funziona il Sito: Flussi e Logiche
 
-## 3. Tecnologie Utilizzate
-- **React.js (v18)**: Libreria core per la costruzione dell'interfaccia a componenti.
-- **Vite**: Build tool ultrarapido utilizzato per lo scaffolding e il ricaricamento a caldo (HMR) durante lo sviluppo.
-- **Tailwind CSS**: Framework CSS utility-first utilizzato per la prototipazione rapida e la creazione di un design system coerente senza la necessità di file CSS separati.
-- **React Router DOM (v6)**: Gestione della navigazione single-page, inclusa la protezione delle rotte.
-- **Lucide React**: Libreria di icone SVG altamente personalizzabili e leggere.
-- **TMDB API**: Sorgente dati esterna per popolare dinamicamente il catalogo dei film.
+### Esplorazione e Ricerca (Home e Offerte)
+Appena l'utente atterra sulla **Home**, il sistema scarica dinamicamente i film di tendenza. L'utente ha a disposizione una barra di ricerca rapida e un **Pannello Filtri Avanzato**. 
+Quando l'utente utilizza i filtri (selezionando Genere, Anno, Voto o Lingua), la pagina non subisce un refresh completo; il sito invia una richiesta "silenziosa" al server per aggiornare istantaneamente la griglia dei film. 
+Selezionando "Offerte" nel menu, l'utente viene portato in una pagina speciale dove un algoritmo proprietario seleziona solo i film "Top Rated" (con recensioni eccellenti, voto superiore a 7.5) e applica automaticamente uno sconto visibile del 30% sia sull'acquisto che sul noleggio.
 
-## 4. Architettura e Scelte Implementative
+### Finestra Dettagli Film (Modale fluttuante)
+Cliccando su una qualsiasi locandina, lo schermo si oscura leggermente e si apre una finestra fluttuante centrale. In questo istante, il sito blocca lo scorrimento della pagina in background, in modo che l'utente non perda mai il punto esatto in cui stava navigando. Nel modale l'utente visualizza la trama completa, il cast principale, e ha a disposizione i bottoni per interagire: "Aggiungi al Carrello" (scegliendo tra acquisto o noleggio) e il pulsante per aggiungere il film ai Preferiti.
 
-### Gestione dello Stato Globale
-Invece di utilizzare librerie esterne pesanti come Redux, lo stato globale è gestito nativamente tramite la Context API di React (`AuthContext` e `CartContext`). Questa scelta riduce il boilerplate e mantiene l'applicazione leggera.
-I dati del carrello, della lista desideri e della sessione utente vengono costantemente sincronizzati con il `localStorage` tramite `useEffect`. Questo garantisce la persistenza dei dati anche dopo il ricaricamento della pagina, offrendo un'esperienza fluida.
+### Autenticazione e Dati Multi-Utente
+Il sito possiede un sistema account avanzato. Gli utenti non registrati ("Ospiti") possono sfogliare l'intero catalogo e usare i filtri liberamente. Tuttavia, se provano ad inserire un film nel carrello o nella wishlist, il sistema intercetta immediatamente l'azione e li accompagna con garbo alla pagina di Login o Registrazione.
+Il punto di forza dell'architettura è il **Multi-User Storage**: quando un utente crea un account, tutti i suoi dati vengono salvati localmente ma "etichettati" in modo univoco con la sua email. Questo significa che se due persone diverse (es. Mario e Luigi) accedono dallo stesso computer, vedranno carrelli, preferiti e storici completamente differenti e privati.
 
-### Autenticazione e Guest Mode
-L'autenticazione è simulata lato client. È stato implementato un sistema ibrido che permette all'utente di navigare liberamente il catalogo o scegliere la modalità ospite (`isGuest`). Tuttavia, le azioni transazionali (aggiunta al carrello o ai preferiti) sono intercettate da un custom hook (`useAuthAction`). 
-Invece di bloccare brutalmente l'utente o nascondere i bottoni, l'hook permette il clic ma esegue un redirect condizionale verso la pagina di login, passando il messaggio di errore appropriato tramite lo state del router. Questo pattern migliora notevolmente la User Experience.
+### Carrello, Checkout e Notifiche (Toast)
+Ogni azione rilevante compiuta dall'utente (aggiungere un film, accedere con successo, svuotare la lista) genera una notifica grafica detta **Toast**: un elegante popup a scomparsa che scende sotto la barra di navigazione superiore, fornendo un feedback rassicurante e immediato.
+Nel **Carrello**, l'utente ha la visione globale dei costi. Può rimuovere singoli film o "Svuotare" l'intero contenitore con un click.
+Selezionando di procedere al pagamento, entra in gioco il **Form di Checkout Avanzato**:
+- Per evitare il fastidio degli avvisi di autocompletamento invasivi di Chrome sui moduli di carta di credito, il sistema utilizza descrizioni intelligenti che neutralizzano gli algoritmi del browser, simulando visivamente una vera carta senza far scattare allarmi.
+- L'utente beneficia di una validazione cromatica in tempo reale: mentre digita i dati, i bordi dei campi si accendono di verde istantaneamente non appena il formato inserito è corretto (es. il completamento di 16 numeri per la carta), altrimenti rimangono rossi di avvertimento. La data di scadenza inoltre posiziona la barra "Mese/Anno" in via del tutto automatica.
+Al termine del Checkout (fittizio), i film passano ufficialmente allo Storico Ordini, il carrello si svuota in un colpo solo, e il sistema rimuove automaticamente i film acquistati anche dalla Lista Desideri (se vi erano presenti), per impedire futuri doppioni.
 
-### Pricing Dinamico e Deterministico
-Poiché l'API pubblica non fornisce prezzi di listino commerciali, i costi vengono generati lato client. Per evitare che i prezzi cambino ad ogni re-render (il che comprometterebbe la credibilità dell'e-commerce), è stata implementata in `src/utils/pricing.js` una funzione di *seeded random generation*. 
-Passando l'ID del film come seed, otteniamo fattori di sconto e prezzi variabili (basati anche sull'età della pellicola) che restano sempre coerenti nel tempo per ciascun titolo.
+### Profilo e Gamification (I Livelli)
+Accedendo alla pagina **Profilo**, l'utente non solo vede i suoi dati anagrafici, ma ha a disposizione la cronologia permanente dei propri ordini. 
+Per stimolare l'engagement, il sito è dotato di un motore di **Gamification**. In base al totale di pellicole acquistate storicamente, il sistema assegna un grado e un badge visivo all'utente:
+- Fino a 5 film: Livello **Novizio** (Badge Bronzo).
+- Dai 6 ai 15 film: Livello **Appassionato** (Badge Argento).
+- Oltre 16 film: Livello **Cinefilo Senior** (Badge Oro).
+Sotto l'avatar dell'utente è visibile una barra di riempimento dinamica che segnala il progresso verso il prossimo livello, motivandolo a completare la sua "collezione".
 
-## 5. Dettagli sul Codice
+### Badge Contatori nella Navigazione
+Così come accade nelle migliori applicazioni e-commerce, le icone della Wishlist e del Carrello sulla barra fissa in alto sono dotate di "Badge" (pallini rossi numerati). Se si aggiunge o si rimuove un film, questi numeretti aumentano o diminuiscono istantaneamente da soli, sia su computer desktop che all'interno del comodo menu a tendina laterale per gli smartphone.
 
-### Intercettazione Sicura degli Eventi (Modale)
-Il componente `MovieModal.jsx` fa uso di `createPortal` per renderizzare il modale all'esterno del normale albero DOM, evitando problemi di z-index e stack context con gli elementi circostanti (es. le griglie CSS).
-La gestione del blocco dello scroll (`document.body.style.overflow`) è incapsulata in un hook `useEffect` con relativa funzione di cleanup:
-```javascript
-useEffect(() => {
-  if (isOpen) {
-    document.body.style.overflow = 'hidden';
-  } else {
-    document.body.style.overflow = '';
-  }
-  return () => { document.body.style.overflow = ''; };
-}, [isOpen]);
-```
-Questo assicura che in caso di smontaggio improvviso del componente, le impostazioni globali del DOM non vengano corrotte.
-
-### Gestione Checkout Unificata
-Nel `CartContext`, la logica del checkout (`clearCartAndCheckout`) effettua un aggiornamento incrociato degli stati:
-```javascript
-const clearCartAndCheckout = () => {
-  const cartMovieIds = new Set(cart.map(item => item.id));
-  setWishlist(prev => prev.filter(item => !cartMovieIds.has(item.id)));
-  setCart([]);
-};
-```
-Sfruttando l'oggetto `Set`, la lookup dei film acquistati avviene in tempo costante `O(1)`. Questo garantisce che, all'avvenuto acquisto, gli articoli appena posseduti vengano defalcati in maniera selettiva e performante dalla lista dei desideri.
-
-## 6. Chiamate API (TMDB)
-Il modulo `src/api/tmdb.js` astrae tutte le interazioni con il server backend.
-È stato configurato un singolo metodo generico `fetchTMDB` che automatizza l'inserimento dell'API key e dei parametri comuni (es. `language=it-IT`).
-
-Una particolarità dell'implementazione è il filtro di sicurezza lato client:
-```javascript
-if (data.results) {
-  return data.results.filter(movie => !movie.adult);
-}
-```
-Poiché determinati endpoint di TMDB (come le ricerche per popolarità o trend) tendono a ignorare il parametro `include_adult=false` nelle stringhe di query in alcune condizioni, il livello API scarta attivamente i risultati inappropriati prima ancora che raggiungano il livello UI, garantendo una visualizzazione *safe for work*. Inoltre, l'endpoint per i dettagli esegue una query arricchita (`append_to_response: 'credits'`) per limitare il numero di richieste HTTP necessarie per caricare cast e crew.
+## 4. La Logica dei Prezzi (Pricing Deterministico)
+Affinché il finto "negozio" risulti assolutamente realistico, i prezzi dei film non possono cambiare in maniera casuale ad ogni aggiornamento della pagina. Dato che i server dei database cinematografici gratuiti non forniscono veri costi in Euro, il sito adotta un algoritmo matematico: prende il codice identificativo unico del film (il suo ID) e il suo anno di rilascio, e li sfrutta come coordinate base (o "seed") per calcolare un prezzo fisso.
+In questo modo, un film vecchio costerà strutturalmente meno di una pellicola uscita l'anno scorso, e il prezzo di un preciso titolo di Batman sarà sempre identico ogni singola volta che il sito verrà consultato.

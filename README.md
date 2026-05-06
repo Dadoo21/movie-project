@@ -9,11 +9,11 @@ Costruita con React e Tailwind CSS, l'applicazione punta a offrire un'esperienza
 
 ## ✨ Funzionalità Principali
 
-- 🎨 **Interfaccia Premium (Glassmorphism)**: Design moderno con effetti di sfocatura, gradienti radiali, micro-animazioni fluide e palette di colori ottimizzata.
-- 🔍 **Ricerca e Filtri Avanzati**: Integrazione profonda con l'API di TMDB. Possibilità di cercare film per titolo o utilizzare filtri avanzati combinati (Genere, Anno, Voto Minimo, Lingua) e ordinamenti dinamici.
-- 💸 **Sistema di Pricing Dinamico e Offerte**: Algoritmo personalizzato che calcola in modo deterministico i prezzi di acquisto e noleggio. Sezione speciale "Offerte" con sconti generati in base alla valutazione della critica (film con voto > 7.5).
-- 🔐 **Autenticazione Simulata e Modalità Ospite**: Flusso di accesso/registrazione protetto. I non loggati possono esplorare liberamente il catalogo, ma le azioni transazionali (Wishlist, Carrello) sono bloccate e richiedono il login.
-- 🛒 **Gestione Stato Globale**: Carrello e Wishlist sincronizzati in tutta l'applicazione tramite Context API e persistenza locale. Sincronizzazione intelligente post-acquisto (i film comprati vengono rimossi automaticamente dalla wishlist).
+- 🎨 **Interfaccia Premium & UX Avanzata**: Design moderno con Glassmorphism, animazioni fluide e notifiche **Toast** intelligenti a comparsa per fornire un feedback visivo immediato su ogni singola azione.
+- 🔐 **Multi-User Storage e Sicurezza**: L'architettura simula un vero backend. I dati del carrello, della wishlist e dello storico acquisti sono completamente isolati nel browser in base all'account connesso. Include un form di checkout professionale con validazione visiva dinamica (colori rosso/verde sui bordi) e formattazione istantanea.
+- 🎮 **Gamification & Profilo Utente**: Sistema di progressione a livelli (Novizio, Appassionato, Cinefilo Senior) basato sui film effettivamente acquistati, con barre di avanzamento grafiche e storicizzazione permanente degli ordini effettuati.
+- 🛒 **Interazioni Intelligenti e Badge Dinamici**: Indicatori numerici reattivi sulla barra di navigazione che tengono il conto in tempo reale di carrello e preferiti. Ecosistema cross-collegato: quando si finalizza un acquisto, i film comprati vengono defalcati automaticamente e silenziosamente dalla lista desideri per evitare doppioni futuri.
+- 🔍 **Ricerca, Filtri e Offerte (TMDB)**: Integrazione asincrona profonda con il database di TMDB. Possibilità di cercare e applicare filtri complessi multipli, accoppiata a un algoritmo personalizzato che calcola in modo "deterministico" sconti e prezzi definitivi in base al prestigio del film.
 
 ## 🚀 Come avviare il progetto localmente
 
@@ -43,6 +43,6 @@ Segui questi passaggi per testare il progetto sul tuo computer:
    ```
    L'applicazione sarà disponibile all'indirizzo `http://localhost:5173`.
 
-## 📚 Documentazione Tecnica
+## 📚 Documentazione
 
-Per un approfondimento completo sull'architettura del software, le scelte implementative e la logica dietro le quinte, consulta il file [DOCUMENTATION.md](./DOCUMENTATION.md) incluso in questa repository.
+Per un approfondimento sui flussi logici e sul funzionamento lato utente dell'applicazione, consulta il file [DOCUMENTATION.md](./DOCUMENTATION.md) aggiornato.
