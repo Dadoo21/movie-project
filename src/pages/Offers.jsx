@@ -1,25 +1,24 @@
 import { useState, useEffect } from 'react';
-import { getTopRatedMovies, searchMovies, getMoviesByGenre } from '../api/tmdb';
+import { searchMovies, discoverMovies } from '../api/tmdb';
 import MovieCard from '../components/MovieCard';
-import { Search, Loader2, Tag } from 'lucide-react';
+import FilterPanel from '../components/FilterPanel';
+import { Loader2, Tag } from 'lucide-react';
 import { getMoviePricing } from '../utils/pricing';
-
-const GENRES = [
-  { id: '', name: 'Tutti i Generi' },
-  { id: 28, name: 'Azione' },
-  { id: 35, name: 'Commedia' },
-  { id: 18, name: 'Dramma' },
-  { id: 27, name: 'Horror' },
-  { id: 878, name: 'Fantascienza' }
-];
 
 const Offers = () => {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedGenre, setSelectedGenre] = useState('');
   const [page, setPage] = useState(1);
+  const [filters, setFilters] = useState({
+    searchQuery: '',
+    with_genres: '',
+    sort_by: 'popularity.desc',
+    primary_release_year: '',
+    'vote_average.gte': '',
+    with_original_language: ''
+  });
 
   const fetchOffers = async (pageNum = 1) => {
     if (pageNum === 1) setLoading(true);
@@ -27,13 +26,14 @@ const Offers = () => {
 
     let results = [];
 
-    if (searchQuery.trim() !== '') {
-      results = await searchMovies(searchQuery, pageNum);
-    } else if (selectedGenre !== '') {
-      results = await getMoviesByGenre(selectedGenre, pageNum);
+    if (filters.searchQuery.trim() !== '') {
+      results = await searchMovies(filters.searchQuery, pageNum);
     } else {
-
-      results = await getTopRatedMovies(pageNum);
+      // Nelle offerte, forziamo sempre un minimo di 7.5 anche se l'utente non lo seleziona
+      const userMinVote = filters['vote_average.gte'] ? parseFloat(filters['vote_average.gte']) : 7.5;
+      const minVote = Math.max(7.5, userMinVote);
+      
+      results = await discoverMovies({ ...filters, 'vote_average.gte': minVote }, pageNum);
     }
 
     const discounted = results.filter(m => getMoviePricing(m).isDiscounted);
@@ -60,7 +60,7 @@ const Offers = () => {
     }, 500);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [searchQuery, selectedGenre]);
+  }, [filters]);
 
   const loadMore = async () => {
     const nextPage = page + 1;
@@ -70,48 +70,20 @@ const Offers = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-6">
         <div className="flex items-center gap-4">
           <Tag className="w-10 h-10 text-yellow-500" />
           <h1 className="text-3xl md:text-5xl font-extrabold text-light uppercase tracking-tight">
             Offerte Speciali
           </h1>
         </div>
-
-        
-        <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-          <div className="relative w-full sm:w-64">
-            <input 
-              type="text" 
-              placeholder="Cerca offerte..." 
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setSelectedGenre('');
-              }}
-              className="w-full bg-gray-900 border border-gray-700 text-light px-4 py-2 pl-10 rounded-full focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-inner"
-            />
-            <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
-          </div>
-
-          <select
-            value={selectedGenre}
-            onChange={(e) => {
-              setSelectedGenre(e.target.value);
-              setSearchQuery('');
-            }}
-            className="w-full sm:w-48 bg-gray-900 border border-gray-700 text-light px-4 py-2 rounded-full focus:outline-none focus:border-primary transition-all cursor-pointer appearance-none"
-          >
-            {GENRES.map(g => (
-              <option key={g.id} value={g.id}>{g.name}</option>
-            ))}
-          </select>
-        </div>
       </div>
       
       <p className="text-gray-400 mb-8 max-w-2xl text-lg">
         Tutti i film acclamati dalla critica (voto superiore a 7.5) sono ora disponibili con fantastici sconti fino al 40% sul prezzo di acquisto. Approfittane subito!
       </p>
+
+      <FilterPanel filters={filters} onFilterChange={setFilters} />
 
       {loading ? (
         <div className="flex justify-center items-center h-64">

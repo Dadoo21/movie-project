@@ -4,12 +4,13 @@
 
 @layer base {
   body {
-    @apply bg-dark text-light antialiased;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    @apply bg-dark text-light antialiased selection:bg-primary selection:text-white;
+    background-image: radial-gradient(circle at top right, rgba(229, 9, 20, 0.08), transparent 500px),
+                      radial-gradient(circle at bottom left, rgba(229, 9, 20, 0.05), transparent 400px);
+    background-attachment: fixed;
   }
 }
 
-/* Scrollbar personalizzata per il tema dark */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -19,7 +20,7 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-gray-800 rounded-full;
+  @apply bg-dark-lighter rounded-full border border-darker;
 }
 
 ::-webkit-scrollbar-thumb:hover {
