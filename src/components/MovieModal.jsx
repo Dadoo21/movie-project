@@ -46,9 +46,9 @@ const MovieModal = ({ movieId, isOpen, onClose }) => {
     <div 
       id="modal-overlay"
       onClick={handleOverlayClick}
-      className="fixed inset-0 bg-black/80 z-[100] flex justify-center items-center p-4 backdrop-blur-sm"
+      className="fixed inset-0 bg-black/60 z-[100] flex justify-center items-center p-4 backdrop-blur-xl"
     >
-      <div className="bg-gray-900 rounded-2xl border border-gray-700 shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto relative animate-fade-in flex flex-col md:flex-row">
+      <div className="bg-dark-lighter rounded-3xl border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)] w-full max-w-4xl max-h-[90vh] overflow-y-auto relative animate-fade-in flex flex-col md:flex-row">
         
         
         <button 
@@ -69,21 +69,21 @@ const MovieModal = ({ movieId, isOpen, onClose }) => {
               <img 
                 src={getImageUrl(details.poster_path, 'w500')} 
                 alt={details.title}
-                className="w-full rounded-xl shadow-lg border border-gray-800"
+                className="w-full rounded-2xl shadow-2xl border border-white/5"
               />
               
               
               <div className="flex flex-col gap-3 mt-4">
                 <button 
                   onClick={() => executeAuthAction(() => { addToCart(details, 'acquisto'); onClose(); }, 'Devi accedere per acquistare un film.')}
-                  className="bg-primary hover:bg-red-700 text-white py-3 rounded-lg font-bold flex justify-center items-center gap-2 transition-all"
+                  className="bg-primary hover:bg-primary-hover text-white py-3 rounded-xl font-bold flex justify-center items-center gap-2 transition-all shadow-glow hover:scale-[1.02]"
                 >
                   <ShoppingBag className="w-5 h-5" /> 
                   Acquista a €{getMoviePricing(details).finalPurchasePrice.toFixed(2)}
                 </button>
                 <button 
                   onClick={() => executeAuthAction(() => { addToCart(details, 'noleggio'); onClose(); }, 'Devi accedere per noleggiare un film.')}
-                  className="bg-gray-800 hover:bg-gray-700 text-white py-3 rounded-lg font-bold transition-all border border-gray-600"
+                  className="bg-dark hover:bg-gray-800 text-white py-3 rounded-xl font-bold transition-all border border-white/10 hover:scale-[1.02]"
                 >
                   {getMoviePricing(details).isDiscounted ? (
                     <>

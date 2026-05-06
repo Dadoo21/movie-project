@@ -6,16 +6,23 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Outfit', 'sans-serif'],
+      },
       colors: {
-        primary: '#E50914', // Rosso per richiamare il tema cinema/streaming
-        dark: '#141414',    // Sfondo principale scuro
-        darker: '#000000',  // Sfondo ancora più scuro per footer o header
-        light: '#FFFFFF',   // Testo chiaro
-        gray: {
-          400: '#9CA3AF',
-          800: '#1F2937',
-          900: '#111827'
-        }
+        primary: {
+          DEFAULT: '#E50914',
+          hover: '#F40612',
+        },
+        dark: {
+          DEFAULT: '#0A0A0B',
+          lighter: '#18181B',
+        },
+        darker: '#000000',
+        light: '#F8F9FA',
+      },
+      boxShadow: {
+        'glow': '0 0 20px rgba(229, 9, 20, 0.3)',
       }
     },
   },

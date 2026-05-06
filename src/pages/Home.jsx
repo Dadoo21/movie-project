@@ -1,37 +1,30 @@
 import { useState, useEffect } from 'react';
-import { getPopularMovies, searchMovies, getMoviesByGenre } from '../api/tmdb';
+import { searchMovies, discoverMovies } from '../api/tmdb';
 import MovieCard from '../components/MovieCard';
-import { Search, Loader2 } from 'lucide-react';
-
-const GENRES = [
-  { id: '', name: 'Tutti i Generi' },
-  { id: 28, name: 'Azione' },
-  { id: 35, name: 'Commedia' },
-  { id: 18, name: 'Dramma' },
-  { id: 27, name: 'Horror' },
-  { id: 878, name: 'Fantascienza' }
-];
+import FilterPanel from '../components/FilterPanel';
+import { Loader2 } from 'lucide-react';
 
 const Home = () => {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedGenre, setSelectedGenre] = useState('');
   const [page, setPage] = useState(1);
+  const [filters, setFilters] = useState({
+    searchQuery: '',
+    with_genres: '',
+    sort_by: 'popularity.desc',
+    primary_release_year: '',
+    'vote_average.gte': '',
+    with_original_language: ''
+  });
 
   const fetchMovies = async (pageNum = 1) => {
     if (pageNum === 1) setLoading(true);
     let results = [];
     
-    if (searchQuery.trim() !== '') {
-
-      results = await searchMovies(searchQuery, pageNum);
-    } else if (selectedGenre !== '') {
-
-      results = await getMoviesByGenre(selectedGenre, pageNum);
+    if (filters.searchQuery.trim() !== '') {
+      results = await searchMovies(filters.searchQuery, pageNum);
     } else {
-
-      results = await getPopularMovies(pageNum);
+      results = await discoverMovies(filters, pageNum);
     }
     
     if (pageNum === 1) {
@@ -52,7 +45,7 @@ const Home = () => {
     }, 500);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [searchQuery, selectedGenre]);
+  }, [filters]);
 
   const loadMore = () => {
     const nextPage = page + 1;
@@ -64,42 +57,13 @@ const Home = () => {
     <div className="max-w-7xl mx-auto px-4 py-8">
       
       
-      <div className="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
+      <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
         <h1 className="text-3xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-primary to-red-500 uppercase tracking-tight">
           Esplora Film
         </h1>
-        
-        <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-          
-          <div className="relative w-full sm:w-64">
-            <input 
-              type="text" 
-              placeholder="Cerca un film..." 
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setSelectedGenre(''); // Resetta il genere se si cerca per testo
-              }}
-              className="w-full bg-gray-900 border border-gray-700 text-light px-4 py-2 pl-10 rounded-full focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-inner"
-            />
-            <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
-          </div>
-
-          
-          <select
-            value={selectedGenre}
-            onChange={(e) => {
-              setSelectedGenre(e.target.value);
-              setSearchQuery(''); // Resetta la ricerca se si filtra per genere
-            }}
-            className="w-full sm:w-48 bg-gray-900 border border-gray-700 text-light px-4 py-2 rounded-full focus:outline-none focus:border-primary transition-all cursor-pointer appearance-none"
-          >
-            {GENRES.map(g => (
-              <option key={g.id} value={g.id}>{g.name}</option>
-            ))}
-          </select>
-        </div>
       </div>
+
+      <FilterPanel filters={filters} onFilterChange={setFilters} />
 
       
       {loading ? (

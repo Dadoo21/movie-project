@@ -40,6 +40,12 @@ export const getMoviesByGenre = (genreId, page = 1) => {
   return fetchTMDB('/discover/movie', { with_genres: genreId, page });
 };
 
+export const discoverMovies = (filters = {}, page = 1) => {
+  // Rimuovi chiavi vuote per non sporcare l'URL
+  const cleanFilters = Object.fromEntries(Object.entries(filters).filter(([_, v]) => v != null && v !== ''));
+  return fetchTMDB('/discover/movie', { ...cleanFilters, page });
+};
+
 export const getTopRatedMovies = (page = 1) => {
   return fetchTMDB('/movie/top_rated', { page });
 };
