@@ -8,6 +8,7 @@ import Wishlist from './pages/Wishlist'; // Added wishlist page import
 import Auth from './pages/Auth';
 import Profile from './pages/Profile';
 import { useAuth } from './context/AuthContext';
+import { Toaster } from 'react-hot-toast';
 
 const ProtectedRoute = ({ children }) => {
   const { user } = useAuth();
@@ -29,7 +30,27 @@ const RequireAuthOrGuest = ({ children }) => {
 function App() {
   return (
     <Router>
-      
+      <Toaster 
+        position="top-center" 
+        containerStyle={{
+          top: 85, // Spinge i toast sotto la navbar
+        }}
+        toastOptions={{
+          style: {
+            background: '#1f2937', // bg-gray-800
+            color: '#f8fafc',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            borderRadius: '12px',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+          },
+          error: {
+            iconTheme: {
+              primary: '#ef4444',
+              secondary: '#fff',
+            },
+          },
+        }}
+      />
       <div className="flex flex-col min-h-screen bg-dark text-light">
         
         <Navbar />

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { LogIn, UserPlus } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const Auth = () => {
   const location = useLocation();
@@ -24,11 +25,10 @@ const Auth = () => {
 
     try {
       if (isLogin) {
-
         login(formData.email, formData.password);
-        navigate('/profile'); // Se va a buon fine, vai al profilo
+        toast.success('Bentornato!');
+        navigate('/profile');
       } else {
-
         if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
           throw new Error('Tutti i campi sono obbligatori');
         }
@@ -38,10 +38,12 @@ const Auth = () => {
 
         const { confirmPassword, ...userData } = formData;
         register(userData);
+        toast.success('Account creato con successo!');
         navigate('/profile');
       }
     } catch (err) {
-      setError(err.message); // Mostra l'errore a schermo (es. "Credenziali non valide")
+      setError(err.message);
+      toast.error(err.message);
     }
   };
 

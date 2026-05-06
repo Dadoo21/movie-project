@@ -1,6 +1,7 @@
 import { createContext, useState, useEffect, useContext } from 'react';
 import { getMoviePricing } from '../utils/pricing';
 import { useAuth } from './AuthContext';
+import toast from 'react-hot-toast';
 
 export const CartContext = createContext();
 
@@ -48,21 +49,22 @@ export const CartProvider = ({ children }) => {
 
 
   const addToCart = (movie, type = 'acquisto') => {
-    setCart((prev) => {
-      const existing = prev.find(item => item.id === movie.id && item.type === type);
-      if (existing) {
-        return prev.map(item =>
-          item.id === movie.id && item.type === type
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
-      }
-
+    const existing = cart.find(item => item.id === movie.id && item.type === type);
+    
+    if (existing) {
+      toast('Quantità aggiornata!', { icon: '🛒', id: 'cart-update' });
+      setCart((prev) => prev.map(item =>
+        item.id === movie.id && item.type === type
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      ));
+    } else {
+      toast('Film aggiunto al carrello!', { icon: '🛒', id: 'cart-add' });
       const { finalPurchasePrice, finalRentPrice } = getMoviePricing(movie);
       const price = type === 'acquisto' ? finalPurchasePrice : finalRentPrice;
-
-      return [...prev, { ...movie, quantity: 1, type, price }];
-    });
+      
+      setCart((prev) => [...prev, { ...movie, quantity: 1, type, price }]);
+    }
   };
 
   const removeFromCart = (id, type) => {
@@ -97,16 +99,29 @@ export const CartProvider = ({ children }) => {
 
     // Svuota il carrello
     setCart([]);
+    toast.success('Pagamento completato! Grazie per l\'acquisto 🎬');
   };
 
   const toggleWishlist = (movie) => {
-    setWishlist(prev => {
-      const exists = prev.find(item => item.id === movie.id);
-      if (exists) {
-        return prev.filter(item => item.id !== movie.id);
-      }
-      return [...prev, movie];
-    });
+    const exists = wishlist.find(item => item.id === movie.id);
+    
+    if (exists) {
+      toast('Rimosso dai preferiti', { icon: '💔', id: 'wishlist-remove' });
+      setWishlist(prev => prev.filter(item => item.id !== movie.id));
+    } else {
+      toast('Aggiunto ai preferiti!', { icon: '❤️', id: 'wishlist-add' });
+      setWishlist(prev => [...prev, movie]);
+    }
+  };
+
+  const clearCart = () => {
+    setCart([]);
+    toast('Carrello svuotato', { icon: '🗑️', id: 'cart-clear' });
+  };
+
+  const clearWishlist = () => {
+    setWishlist([]);
+    toast('Lista desideri svuotata', { icon: '🗑️', id: 'wishlist-clear' });
   };
 
   const isInWishlist = (id) => wishlist.some(item => item.id === id);
@@ -120,8 +135,8 @@ export const CartProvider = ({ children }) => {
 
   return (
     <CartContext.Provider value={{ 
-      cart, addToCart, removeFromCart, updateQuantity, clearCartAndCheckout, cartTotalItems, cartTotalPrice,
-      wishlist, toggleWishlist, isInWishlist,
+      cart, addToCart, removeFromCart, updateQuantity, clearCartAndCheckout, clearCart, cartTotalItems, cartTotalPrice,
+      wishlist, toggleWishlist, isInWishlist, clearWishlist,
       orderHistory, clearOrderHistory
     }}>
       {children}
