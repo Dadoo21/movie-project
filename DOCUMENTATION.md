@@ -16,7 +16,7 @@ Il codice è organizzato in una struttura modulare per facilitare la manutenzion
 ### Esplorazione e Ricerca (Home e Offerte)
 Appena l'utente atterra sulla **Home**, il sistema scarica dinamicamente i film di tendenza. L'utente ha a disposizione una barra di ricerca rapida e un **Pannello Filtri Avanzato**. 
 Quando l'utente utilizza i filtri (selezionando Genere, Anno, Voto o Lingua), la pagina non subisce un refresh completo; il sito invia una richiesta "silenziosa" al server per aggiornare istantaneamente la griglia dei film. 
-Selezionando "Offerte" nel menu, l'utente viene portato in una pagina speciale dove un algoritmo proprietario seleziona solo i film "Top Rated" (con recensioni eccellenti, voto superiore a 7.5) e applica automaticamente uno sconto visibile del 30% sia sull'acquisto che sul noleggio.
+Selezionando "Offerte" nel menu, l'utente viene portato in una pagina speciale dove un algoritmo proprietario seleziona solo i film "Top Rated" (con recensioni eccellenti, voto superiore a 7.5) e applica automaticamente uno sconto visibile fino al 40% sia sull'acquisto che sul noleggio.
 
 ### Finestra Dettagli Film (Modale fluttuante)
 Cliccando su una qualsiasi locandina, lo schermo si oscura leggermente e si apre una finestra fluttuante centrale. In questo istante, il sito blocca lo scorrimento della pagina in background, in modo che l'utente non perda mai il punto esatto in cui stava navigando. Nel modale l'utente visualizza la trama completa, il cast principale, e ha a disposizione i bottoni per interagire: "Aggiungi al Carrello" (scegliendo tra acquisto o noleggio) e il pulsante per aggiungere il film ai Preferiti.
