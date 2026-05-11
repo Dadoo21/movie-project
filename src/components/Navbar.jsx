@@ -16,7 +16,7 @@ const Navbar = () => {
     <nav className="fixed w-full z-50 top-0 backdrop-blur-xl bg-darker/80 border-b border-white/5 text-light transition-all duration-300 shadow-xl shadow-black/40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 relative">
-          
+
           <div className="flex items-center z-10">
             <Link to="/" className="flex items-center gap-2 group" onClick={chiudiMenu}>
               <div className="bg-primary/10 p-2 rounded-lg group-hover:bg-primary/20 transition-colors">
@@ -30,23 +30,21 @@ const Navbar = () => {
 
           <div className="hidden md:flex absolute inset-0 justify-center items-center pointer-events-none">
             <div className="flex space-x-2 pointer-events-auto bg-darker/50 p-1.5 rounded-full border border-white/5 backdrop-blur-md shadow-lg shadow-black/20">
-              <Link 
-                to="/" 
-                className={`px-6 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${
-                  location.pathname === '/' 
-                    ? 'bg-white/10 text-white shadow-sm' 
+              <Link
+                to="/"
+                className={`px-6 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${location.pathname === '/'
+                    ? 'bg-white/10 text-white shadow-sm'
                     : 'text-gray-400 hover:text-white hover:bg-white/5'
-                }`}
+                  }`}
               >
                 Home
               </Link>
-              <Link 
-                to="/offers" 
-                className={`px-6 py-2 rounded-full text-sm font-bold tracking-wide transition-all duration-300 ${
-                  location.pathname === '/offers'
+              <Link
+                to="/offers"
+                className={`px-6 py-2 rounded-full text-sm font-bold tracking-wide transition-all duration-300 ${location.pathname === '/offers'
                     ? 'bg-primary text-white shadow-glow'
                     : 'text-primary/80 hover:text-white hover:bg-primary/20'
-                }`}
+                  }`}
               >
                 Offerte
               </Link>
@@ -62,7 +60,7 @@ const Navbar = () => {
                 </span>
               )}
             </Link>
-            
+
             <Link to="/cart" className="relative p-2.5 rounded-full bg-dark-lighter hover:bg-white/10 transition-all duration-300 hover:scale-105 border border-white/5 text-gray-300 hover:text-primary shadow-sm" title="Carrello">
               <ShoppingCart className="h-5 w-5" />
               {cartTotalItems > 0 && (
@@ -71,7 +69,7 @@ const Navbar = () => {
                 </span>
               )}
             </Link>
-            
+
             <Link to={user ? "/profile" : "/auth"} className="flex items-center gap-2 p-1.5 pr-4 rounded-full bg-dark-lighter hover:bg-white/10 transition-all duration-300 hover:scale-105 border border-white/5 text-gray-300 hover:text-white shadow-sm" title="Profilo">
               <div className="bg-gray-800 p-1.5 rounded-full">
                 <User className="h-4 w-4 text-gray-300" />
@@ -91,7 +89,7 @@ const Navbar = () => {
         </div>
       </div>
 
-      
+
       {isOpen && (
         <div className="md:hidden bg-darker/95 backdrop-blur-xl border-t border-white/5">
           <div className="px-3 pt-3 pb-4 space-y-2 sm:px-4 flex flex-col">

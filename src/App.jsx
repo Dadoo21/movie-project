@@ -30,8 +30,8 @@ const RequireAuthOrGuest = ({ children }) => {
 function App() {
   return (
     <Router>
-      <Toaster 
-        position="top-center" 
+      <Toaster
+        position="top-center"
         containerStyle={{
           top: 85, // Spinge i toast sotto la navbar
         }}
@@ -52,10 +52,10 @@ function App() {
         }}
       />
       <div className="flex flex-col min-h-screen bg-dark text-light">
-        
+
         <Navbar />
-        
-        
+
+
         <main className="flex-grow pt-16">
           <Routes>
             <Route path="/" element={<RequireAuthOrGuest><Home /></RequireAuthOrGuest>} />
@@ -63,20 +63,20 @@ function App() {
             <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
             <Route path="/wishlist" element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
             <Route path="/auth" element={<Auth />} />
-            
-            
-            <Route 
-              path="/profile" 
+
+
+            <Route
+              path="/profile"
               element={
                 <ProtectedRoute>
                   <Profile />
                 </ProtectedRoute>
-              } 
+              }
             />
           </Routes>
         </main>
 
-        
+
         <Footer />
       </div>
     </Router>
